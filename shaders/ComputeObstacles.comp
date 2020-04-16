@@ -1,0 +1,54 @@
+
+#version 450
+
+layout (local_size_x = 8, local_size_y = 8,local_size_z = 8) in;
+
+uniform vec4 Size;
+
+// Binding 1 : 
+layout( binding = 1) buffer _Write 
+{
+   float Write[];
+};
+
+
+
+
+void main ()
+{
+    uvec3 id = gl_GlobalInvocationID;
+    int idx = int ( id.x + id.y * Size.x + id.z * Size.x * Size.y);
+   
+    float obstacle = 0;
+    
+    if (int(id.x) - 1 < 0) obstacle = 1;
+    if (int(id.x) + 1 > int( Size.x) -1 ) obstacle = 1;
+    
+    if (int(id.y) - 1 < 0) obstacle = 1;
+    if (int(id.y) + 1 > int( Size.y) -1) obstacle = 1;
+    
+    if (int(id.z) - 1 < 0) obstacle = 1;
+    if (int(id.z) + 1 > int( Size.z) -1 ) obstacle = 1;
+    
+    Write[idx] = obstacle;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

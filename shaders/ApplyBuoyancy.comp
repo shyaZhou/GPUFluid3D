@@ -1,0 +1,73 @@
+
+
+#version 450
+
+layout (local_size_x = 8, local_size_y = 8,local_size_z = 8) in;
+
+
+uniform vec4 Size;
+uniform  vec4 Up;
+uniform  float AmbientTemperature;
+uniform float  DeltaTime;
+uniform float Buoyancy;
+uniform float Weight;
+
+
+layout( binding = 2) buffer _Write 
+{
+   vec3 Write[];
+} ;
+
+layout(binding = 3) buffer _Velocity 
+{
+   vec3 Velocity[];
+};
+
+layout( binding = 4) buffer _Density 
+{
+   float Density[];
+};
+
+layout( binding = 5) buffer _Temperature 
+{
+   float Temperature[];
+};
+
+
+
+void main() 
+{
+
+    uvec3 id = gl_GlobalInvocationID;
+    int idx = int(id.x + id.y* Size.x + id.z* Size.x * Size.y);
+    
+    float T = Temperature[idx];
+    float D = Density[idx];
+    vec3 V = Velocity[idx];
+    
+    if(T > AmbientTemperature)
+    	V += (DeltaTime * (T - AmbientTemperature) * Buoyancy - D * Weight) * Up.xyz;
+    
+     Write[idx] = V;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

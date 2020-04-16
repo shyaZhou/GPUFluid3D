@@ -1,0 +1,65 @@
+
+#version 450
+
+layout (local_size_x = 8, local_size_y = 8,local_size_z = 8) in;
+
+
+uniform float DeltaTime;
+uniform float Epsilon;
+uniform vec4 Size;
+
+
+// Binding 2 : 
+layout(binding = 2) buffer _Write 
+{
+   vec3 Write[];
+};
+
+// Binding 3 : 
+layout( binding = 3) buffer _Vorticity 
+{
+   vec3 Vorticity[];
+};
+
+// Binding 4 : 
+layout( binding = 4) buffer _Read 
+{
+   vec3 Read[] ;
+};
+
+
+
+void main ()
+{
+
+    uvec3 id =  gl_GlobalInvocationID;
+    int idxL = int(max(0, id.x-1) + id.y * Size.x + id.z * Size.x * Size.y);
+    int idxR = int(min( Size.x-1, id.x+1) + id.y * Size.x + id.z * Size.x *Size.y);
+    
+    int idxB = int(id.x + max(0, id.y-1) * Size.x + id.z * Size.x * Size.y);
+    int idxT = int(id.x + min(Size.y-1, id.y+1) * Size.x + id.z * Size.x *Size.y);
+    
+    int idxD = int(id.x + id.y * Size.x + max(0, id.z-1) * Size.x * Size.y);
+    int idxU = int(id.x + id.y * Size.x + min(Size.z-1, id.z+1) * Size.x * Size.y);
+    
+	float omegaL = length(Vorticity[ idxL ]);
+    float omegaR = length(Vorticity[ idxR ]);
+    
+    float omegaB = length(Vorticity[ idxB ]);
+    float omegaT = length(Vorticity[ idxT ]);
+    
+    float omegaD = length(Vorticity[ idxD ]);
+    float omegaU = length(Vorticity[ idxU ]);
+    
+    int idx = int(id.x + id.y* Size.x + id.z * Size.x * Size.y);
+    
+    vec3 omega = Vorticity[idx];
+    
+    vec3 eta = 0.5 * vec3( omegaR - omegaL, omegaT - omegaB, omegaU - omegaD );
+
+    eta = normalize( eta + vec3(0.001,0.001,0.001) );
+    
+    vec3 force = DeltaTime * Epsilon * vec3( eta.y * omega.z - eta.z * omega.y, eta.z * omega.x - eta.x * omega.z, eta.x * omega.y - eta.y * omega.x );
+	
+    Write[idx] = Read[idx] + force;
+}

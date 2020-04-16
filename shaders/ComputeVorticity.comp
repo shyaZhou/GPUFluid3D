@@ -1,0 +1,50 @@
+
+#version 450
+
+
+uniform vec4 Size;
+
+
+
+// Binding 0 : 
+layout( binding = 1) buffer _Write 
+{
+   vec3 Write[];
+};
+
+// Binding 1 : 
+layout( binding = 2) buffer _Velocity 
+{
+   vec3 Velocity[];
+};
+
+layout (local_size_x = 8, local_size_y = 8,local_size_z = 8) in;
+
+void main ()
+{
+
+    uvec3 id = gl_GlobalInvocationID;
+    int idxL = int(max(0, id.x-1) + id.y * Size.x + id.z * Size.x * Size.y);
+    int idxR = int(min(Size.x-1, id.x+1) + id.y * Size.x + id.z * Size.x * Size.y);
+    
+    int idxB = int(id.x + max(0, id.y-1)* Size.x + id.z * Size.x * Size.y);
+    int idxT = int(id.x + min( Size.y-1, id.y+1) * Size.x + id.z * Size.x * Size.y);
+    
+    int idxD = int(id.x + id.y * Size.x + max(0, id.z-1) * Size.x * Size.y);
+    int idxU = int(id.x + id.y * Size.x + min( Size.z-1, id.z + 1) * Size.x * Size.y);
+
+	vec3 L = Velocity[ idxL ];
+    vec3 R = Velocity[ idxR ];
+    
+    vec3 B = Velocity[ idxB ];
+    vec3 T = Velocity[ idxT ];
+    
+    vec3 D = Velocity[ idxD ];
+    vec3 U = Velocity[ idxU ];
+    
+    vec3 vorticity = 0.5 * vec3( (( T.z - B.z ) - ( U.y - D.y )) , (( U.x - D.x ) - ( R.z - L.z )) , (( R.y - L.y ) - ( T.x - B.x )) );
+			
+	int idx = int(id.x + id.y * Size.x + id.z * Size.x * Size.y);
+	
+    Write[idx] = vorticity;
+}

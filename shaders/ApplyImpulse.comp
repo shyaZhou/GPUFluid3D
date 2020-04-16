@@ -1,0 +1,86 @@
+
+#version 450
+
+
+
+
+uniform  float Radius;
+uniform float Amount;
+uniform float DeltaTime;
+uniform  vec4 Pos;
+uniform vec4 Size;
+ 
+
+
+// Binding 0 : 
+layout( binding = 2) buffer _Write 
+{
+   float Write[];
+};
+
+// Binding 1 : 
+layout(binding = 3) buffer _Read 
+{
+   float Read[];
+};
+
+/*layout(binding = 3) uniform _Extinguishment
+{
+    float Extinguishment;
+}; 
+*/
+
+// Binding 2 : 
+/*layout(std140, binding = 2) buffer _Reaction 
+{
+   float Reaction [];
+};
+*/
+layout (local_size_x = 8, local_size_y = 8,local_size_z = 8) in;
+
+
+
+void main()
+{
+    uvec3 id = gl_GlobalInvocationID;
+	vec3 pos = id/( Size.xyz-1.0f) - Pos.xyz;
+	float mag = pos.x*pos.x + pos.y*pos.y + pos.z*pos.z;
+	float rad2 = Radius * Radius;
+	
+	float amount = exp(-mag/rad2) * Amount * DeltaTime;
+				
+	int idx = int(id.x + id.y * Size.x + id.z * Size.x * Size.y);
+	
+    Write[idx] = Read[idx] + amount;
+}
+
+
+/*(void ExtinguishmentImpulse()
+{
+			
+	int idx = int(gl_GlobalInvocationID.x + gl_GlobalInvocationID.y*_Size.x + gl_GlobalInvocationID.z*_Size.x*_Size.y);
+	
+	float amount = 0.0;
+	float reaction = Reaction[idx];
+	
+	if(reaction > 0.0 && reaction < _Extinguishment) 
+		amount = _Amount * reaction;
+	
+    Write[idx] = Read[idx] + amount;
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

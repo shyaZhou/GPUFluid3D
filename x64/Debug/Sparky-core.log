@@ -1,0 +1,5 @@
+﻿  FluidRenderer.cpp
+g:\git\finakle\sparky-core\render\fluidrenderer.h : warning C4819: The file contains a character that cannot be represented in the current code page (936). Save the file in Unicode format to prevent data loss
+g:\git\finakle\sparky-core\render\fluidrenderer.h(82): warning C4305: 'initializing': truncation from 'double' to 'const float'
+g:\git\finakle\sparky-core\render\fluidrenderer.cpp(138): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Sparky-core.vcxproj -> G:\git\finakle\Sparky-core\x64\Debug\Sparky-core.exe

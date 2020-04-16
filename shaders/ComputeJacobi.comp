@@ -1,0 +1,88 @@
+#version 450
+
+
+
+layout (local_size_x = 8, local_size_y = 8,local_size_z = 8) in;
+
+uniform vec4 Size;
+
+// Binding 0 : 
+layout( binding = 1) buffer _Write 
+{
+   float Write[];
+};
+
+// Binding 1 : 
+layout( binding = 2) buffer _Pressure 
+{
+   float Pressure[];
+};
+
+// Binding 2 : 
+layout( binding = 3) buffer _Obstacles 
+{
+   float Obstacles[];
+};
+
+
+// Binding 3 : 
+layout( binding = 4) buffer _Divergence 
+{
+   vec3 Divergence[];
+};
+
+void main ()
+{
+
+    uvec3 id = gl_GlobalInvocationID;
+    int idxL = int(max(0, id.x-1) + id.y * Size.x + id.z * Size.x * Size.y);
+    int idxR = int(min(Size.x-1, id.x+1) + id.y * Size.x + id.z * Size.x * Size.y);
+    
+    int idxB = int(id.x + max(0, id.y-1) * Size.x + id.z * Size.x * Size.y);
+    int idxT = int(id.x + min(Size.y-1, id.y+1) * Size.x + id.z * Size.x * Size.y);
+    
+    int idxD = int(id.x + id.y*Size.x + max(0, id.z-1) * Size.x * Size.y);
+    int idxU = int(id.x + id.y*Size.x + min(Size.z-1, id.z+1) * Size.x * Size.y);
+    
+	float L = Pressure[ idxL ];
+    float R = Pressure[ idxR ];
+    
+    float B = Pressure[ idxB ];
+    float T = Pressure[ idxT ];
+    
+    float D = Pressure[ idxD ];
+    float U = Pressure[ idxU ];
+    
+    int idx = int(id.x + id.y * Size.x + id.z * Size.x * Size.y);
+    
+    float C = Pressure[idx];
+    
+    float divergence = Divergence[idx].r;
+    
+    if(Obstacles[idxL] > 0.1) L = C;
+    if(Obstacles[idxR] > 0.1) R = C;
+    
+    if(Obstacles[idxB] > 0.1) B = C;
+    if(Obstacles[idxT] > 0.1) T = C;
+    
+    if(Obstacles[idxD] > 0.1) D = C;
+    if(Obstacles[idxU] > 0.1) U = C;
+    
+    Write[idx] = ( L + R + B + T + U + D - divergence ) / 6.0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

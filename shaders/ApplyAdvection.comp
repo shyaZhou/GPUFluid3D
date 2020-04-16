@@ -1,0 +1,123 @@
+﻿
+
+#version 450 core
+
+layout (local_size_x = 8, local_size_y = 8,local_size_z = 8) in;
+
+
+uniform vec3   Size;
+
+uniform float  DeltaTime;
+
+uniform  float Dissipate;
+
+uniform float  Decay;
+
+uniform float  Forward;
+
+
+// Binding 1 : _Velocity storage buffer
+layout(binding = 1) buffer _Velocity 
+{
+   vec3 Vel[];
+};
+
+// Binding 2 : Obstacles storage buffer
+layout( binding = 2) buffer _Obstacles 
+{
+   float Obstacles[];
+};
+
+// Binding 3 : _Write1f storage buffer
+layout( binding = 3) buffer _Write1f 
+{
+   float Write1f[];
+};
+
+// Binding 4 : _Read1f  buffer
+layout(binding = 4) buffer _Read1f 
+{
+   float Read1f[];
+};
+
+vec3 GetAdvectedPosTexCoords(vec3 pos, int idx)
+{
+    pos -= DeltaTime * Forward * Vel[idx];
+
+    return pos;
+}
+
+
+
+float SampleBilinearForRead1f(vec3 uv, vec3 size)
+{
+	int x = int(uv.x);
+	int y = int(uv.y);
+	int z = int(uv.z);
+	
+	int X = int(size.x);
+	int XY = int(size.x*size.y);
+	
+	float fx = uv.x-x;
+	float fy = uv.y-y;
+	float fz = uv.z-z;
+	
+	int xp1 = int(min(size.x-1, x+1));
+	int yp1 =  int(min(size.y-1, y+1));
+	int zp1 = int(min(size.z-1, z+1));
+	
+	float x0 = Read1f[x+y*X+z*XY] * (1.0f-fx) + Read1f[xp1+y*X+z*XY] * fx;
+	float x1 = Read1f[x+y*X+zp1*XY] * (1.0f-fx) + Read1f[xp1+y*X+zp1*XY] * fx;
+	
+	float x2 = Read1f[x+yp1*X+z*XY] * (1.0f-fx) + Read1f[xp1+yp1*X+z*XY] * fx;
+	float x3 = Read1f[x+yp1*X+zp1*XY] * (1.0f-fx) + Read1f[xp1+yp1*X+zp1*XY] * fx;
+	
+	float z0 = x0 * (1.0f-fz) + x1 * fz;
+	float z1 = x2 * (1.0f-fz) + x3 * fz;
+	
+	return z0 * (1.0f-fy) + z1 * fy;
+
+}
+
+
+
+
+void main()
+{
+    uvec3 id =  gl_GlobalInvocationID;
+    int idx = int(id.x + id.y * Size.x + id.z * Size.x * Size.y);
+	
+	if(Obstacles[idx] > 0.1)
+	{
+		 Write1f[idx] = 0;
+		 return;
+	}
+
+	vec3 uv = GetAdvectedPosTexCoords(id, idx);
+
+	Write1f[idx] = max(0,SampleBilinearForRead1f(uv, Size.xyz) * Dissipate - Decay);
+	                                                
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
