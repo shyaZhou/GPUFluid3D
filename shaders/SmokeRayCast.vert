@@ -14,7 +14,7 @@ void main()
 {
  
     gl_Position = pr_matrix  * v_matrix * m_matrix * vec4(position.xyz, 1.0);
-	worldPos =  vec4(position.xyz, 1.0).xyz;
+	worldPos =  (m_matrix *vec4(position.xyz, 1.0)).xyz;
 }
 
 

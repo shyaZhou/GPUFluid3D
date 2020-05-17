@@ -5,14 +5,14 @@ namespace sparky {
 	namespace geometry {
 		void objLoader::LoadMesh(const char* file, RawMesh& rmesh)
 		{
-			rmesh.m_Position.push_back(glm::vec3(-1,-1,-1));
-			rmesh.m_Position.push_back(glm::vec3(-1, -1, 1));
-			rmesh.m_Position.push_back(glm::vec3(-1, 1, 1));
-			rmesh.m_Position.push_back(glm::vec3(-1, 1, -1));
-			rmesh.m_Position.push_back(glm::vec3(1, -1, -1));
-			rmesh.m_Position.push_back(glm::vec3(1, -1, 1));
-			rmesh.m_Position.push_back(glm::vec3(1, 1, 1));
-			rmesh.m_Position.push_back(glm::vec3(1, 1, -1));
+			rmesh.m_Position.push_back(glm::vec3(-0.5,-0.5,-0.5));
+			rmesh.m_Position.push_back(glm::vec3(-0.5, -0.5, 0.5));
+			rmesh.m_Position.push_back(glm::vec3(-0.5, 0.5, 0.5));
+			rmesh.m_Position.push_back(glm::vec3(-0.5, 0.5, -0.5));
+			rmesh.m_Position.push_back(glm::vec3(0.5, -0.5, -0.5));
+			rmesh.m_Position.push_back(glm::vec3(0.5, -0.5, 0.5));
+			rmesh.m_Position.push_back(glm::vec3(0.5, 0.5, 0.5));
+			rmesh.m_Position.push_back(glm::vec3(0.5, 0.5, -0.5));
 
 			rmesh.m_Faces.push_back(0);
 			rmesh.m_Faces.push_back(1);
@@ -22,11 +22,11 @@ namespace sparky {
 			rmesh.m_Faces.push_back(3);
 
 			rmesh.m_Faces.push_back(4);
+			rmesh.m_Faces.push_back(6);
 			rmesh.m_Faces.push_back(5);
-			rmesh.m_Faces.push_back(6);
 			rmesh.m_Faces.push_back(4);
-			rmesh.m_Faces.push_back(6);
 			rmesh.m_Faces.push_back(7);
+			rmesh.m_Faces.push_back(6);
 
 			rmesh.m_Faces.push_back(0);
 			rmesh.m_Faces.push_back(4);
@@ -36,27 +36,27 @@ namespace sparky {
 			rmesh.m_Faces.push_back(1);
 
 			rmesh.m_Faces.push_back(3);
-			rmesh.m_Faces.push_back(7);
 			rmesh.m_Faces.push_back(6);
+			rmesh.m_Faces.push_back(7);
 			rmesh.m_Faces.push_back(3);
+			rmesh.m_Faces.push_back(2);
+			rmesh.m_Faces.push_back(6);
+
+
+			rmesh.m_Faces.push_back(1);
+			rmesh.m_Faces.push_back(5);
+			rmesh.m_Faces.push_back(6);
 			rmesh.m_Faces.push_back(6);
 			rmesh.m_Faces.push_back(2);
-
-
-			rmesh.m_Faces.push_back(1);
-			rmesh.m_Faces.push_back(5);
-			rmesh.m_Faces.push_back(6);
-			rmesh.m_Faces.push_back(6);
-			rmesh.m_Faces.push_back(2);
 			rmesh.m_Faces.push_back(1);
 
 
 			rmesh.m_Faces.push_back(0);
+			rmesh.m_Faces.push_back(7);
 			rmesh.m_Faces.push_back(4);
-			rmesh.m_Faces.push_back(7);
 			rmesh.m_Faces.push_back(0);
-			rmesh.m_Faces.push_back(7);
 			rmesh.m_Faces.push_back(3);
+			rmesh.m_Faces.push_back(7);
 
 
 
